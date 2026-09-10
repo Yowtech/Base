@@ -13,9 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PROTECTION-JAVA/Protection.git"
+    "url": "https://github.com/Yowtech/Base.git"
   },
-  "homepage": "https://github.com/PROTECTION-JAVA/Protection#readme",
+  "homepage": "https://github.com/Yowtech/Base#readme",
   "files": [
     "lib/**/*",
     "WAProto/**/*",
