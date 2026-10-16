@@ -2,14 +2,14 @@
 
 This is a **Baileys/Yowtech package update**, not a WhatsApp bot/SC project. The compatibility methods are installed by Yowtech's public `makeWASocket()` factory and are available on the returned socket as `sock.alya`.
 
-Package version: `1.0.1-rv-alyaport.1` (based on upstream Yowtech `1.0.1-rv`). Node.js 20 or newer is required.
+Package version: `1.0.2-rv`. Node.js 20 or newer is required.
 
 ## Install or test the fork package
 
 From the consumer project, install the packaged fork tarball:
 
 ```bash
-npm install ./yowtech-1.0.1-rv-alyaport.1.tgz
+npm install ./yowtech-1.0.2-rv.tgz
 ```
 
 To run the fork's local tests from this source tree:
@@ -19,7 +19,15 @@ npm install
 npm test
 ```
 
-Do not publish or replace an upstream package registry version unless you intend to release this fork yourself.
+## Manual npm publish
+
+The repository workflow publishes only `yowtech@1.0.2-rv`, and only when manually run from `main` with the exact confirmation string. Before running it:
+
+1. In the npm account that owns `yowtech`, create a granular/automation token with publish access to that package.
+2. In GitHub, open **Settings → Secrets and variables → Actions → New repository secret**. Set the name to `NPM_TOKEN` and paste the token as its value. Never commit the token or send it in chat.
+3. Open **Actions → Publish Yowtech → Run workflow**, select `main`, and enter exactly `yowtech@1.0.2-rv` in `confirm_publish`.
+
+The workflow checks the package name/version, installs dependencies, runs tests, checks the package contents, refuses to publish if that version already exists, then publishes publicly with provenance. Do not run it until `NPM_TOKEN` is configured for an npm account with publish rights.
 
 ## Added public APIs
 

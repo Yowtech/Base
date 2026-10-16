@@ -1,11 +1,17 @@
 name: Publish Yowtech
-# VER2
+
 on:
   workflow_dispatch:
+    inputs:
+      confirm_publish:
+        description: Type exactly yowtech@1.0.2-rv to publish this package version
+        required: true
+        type: string
 
 jobs:
   publish:
     name: Publish to npm
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_publish == 'yowtech@1.0.2-rv' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -13,8 +19,10 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,11 +30,32 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
-      - name: Install dependencies
-        run: npm install
+      - name: Verify package identity and version
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs')
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+          if (pkg.name !== 'yowtech' || pkg.version !== '1.0.2-rv') {
+            throw new Error(`Unexpected release target: ${pkg.name}@${pkg.version}`)
+          }
+          console.log(`Validated ${pkg.name}@${pkg.version}`)
+          NODE
 
-      - name: Check package
+      - name: Install dependencies
+        run: npm install --ignore-scripts --package-lock=false --no-audit --no-fund
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check package contents
         run: npm pack --dry-run
+
+      - name: Ensure version is not already published
+        run: |
+          if npm view yowtech@1.0.2-rv version >/dev/null 2>&1; then
+            echo 'yowtech@1.0.2-rv already exists on npm; refusing to publish.' >&2
+            exit 1
+          fi
 
       - name: Publish package
         run: npm publish --access public --provenance
