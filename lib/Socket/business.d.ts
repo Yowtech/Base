@@ -111,7 +111,7 @@ export function makeBusinessSocket(config: any): {
     getUSyncDevices: (jids: any, useCache: any, ignoreZeroDevices: any) => Promise<any[]>;
     updateMemberLabel: (jid: any, memberLabel: any) => Promise<any>;
     updateMediaMessage: (message: any) => Promise<any>;
-    sendMessage: (jid: any, content: any, options?: {}) => Promise<import("../index.js").proto.WebMessageInfo | undefined>;
+    sendMessage: (jid: any, content: any, options?: { noSelfSync?: boolean; [key: string]: any }) => Promise<import("../index.js").proto.WebMessageInfo | undefined>;
     executeWMexQuery: (variables: any, queryId: any, dataPath: any) => Promise<any>;
     newsletterCreate: (name: any, description: any) => Promise<{
         id: any;
@@ -140,6 +140,10 @@ export function makeBusinessSocket(config: any): {
     newsletterUpdateDescription: (jid: any, description: any) => Promise<any>;
     newsletterUpdatePicture: (jid: any, content: any) => Promise<any>;
     newsletterRemovePicture: (jid: any) => Promise<any>;
+    newsletterSendStatus: (options: any) => Promise<{ id: string; serverId?: number; ack: any; payload: Uint8Array }>;
+    newsletterReactStatus: (options: any) => Promise<any>;
+    newsletterRevokeStatus: (options: any) => Promise<any>;
+    newsletterFetchStatuses: (options: any) => Promise<{ jid?: string; t?: number; statuses: any[] }>;
     newsletterReactMessage: (jid: any, serverId: any, reaction: any) => Promise<void>;
     newsletterFetchMessages: (type: any, key: any, count: any, after: any, before: any) => Promise<{
         [k: string]: any;
