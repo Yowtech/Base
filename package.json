@@ -1,7 +1,7 @@
 {
   "name": "yowtech",
-  "version": "1.0.2-rv",
-  "description": "Local Yowtech Baileys fork with additive Alya-js compatibility features",
+  "version": "1.0.3-rv",
+  "description": "Yowtech Baileys fork with Alya compatibility APIs and enhanced contact store",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
@@ -21,6 +21,7 @@
     "lib/**/*",
     "WAProto/**/*",
     "test/**/*",
+    "CHANGELOG.md",
     "ALYA_PORT.md",
     "engine-requirements.js"
   ],
