@@ -1,3 +1,6 @@
+export type NewsletterUpdateReaction = { code: string; count: number };
+export type NewsletterUpdate = { serverId: string; views: number; reactions: NewsletterUpdateReaction[] };
+export function parseNewsletterUpdates(response: any): NewsletterUpdate[];
 export function makeNewsletterSocket(config: any): {
     executeWMexQuery: (variables: any, queryId: any, dataPath: any) => Promise<any>;
     newsletterCreate: (name: any, description: any) => Promise<{
@@ -31,6 +34,7 @@ export function makeNewsletterSocket(config: any): {
     newsletterReactStatus: (options: any) => Promise<any>;
     newsletterRevokeStatus: (options: any) => Promise<any>;
     newsletterFetchStatuses: (options: any) => Promise<{ jid?: string; t?: number; statuses: any[] }>;
+    newsletterFetchUpdates: (jid: string, count?: number, after?: number | string, since?: number | string) => Promise<NewsletterUpdate[]>;
     newsletterReactMessage: (jid: any, serverId: any, reaction: any) => Promise<void>;
     newsletterFetchMessages: (type: any, key: any, count: any, after: any, before: any) => Promise<{
         [k: string]: any;

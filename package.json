@@ -1,7 +1,7 @@
 {
   "name": "yowtech",
-  "version": "1.0.3-rv",
-  "description": "Yowtech Baileys fork with Alya compatibility APIs and enhanced contact store",
+  "version": "1.0.4-rv",
+  "description": "Yowtech Baileys fork with optional auth adapters, newsletter helpers, and Alya compatibility APIs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",

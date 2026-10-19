@@ -280,6 +280,7 @@ declare function makeWASocket(config: any): {
     newsletterReactStatus: (options: any) => Promise<any>;
     newsletterRevokeStatus: (options: any) => Promise<any>;
     newsletterFetchStatuses: (options: any) => Promise<{ jid?: string; t?: number; statuses: any[] }>;
+    newsletterFetchUpdates: (jid: string, count?: number, after?: number | string, since?: number | string) => Promise<import("./newsletter.js").NewsletterUpdate[]>;
     newsletterReactMessage: (jid: any, serverId: any, reaction: any) => Promise<void>;
     newsletterFetchMessages: (type: any, key: any, count: any, after: any, before: any) => Promise<{
         [k: string]: any;

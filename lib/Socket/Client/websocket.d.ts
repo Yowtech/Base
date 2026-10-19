@@ -6,6 +6,7 @@ export class WebSocketClient extends AbstractSocketClient {
     get isClosing(): boolean;
     get isConnecting(): boolean;
     connect(): void;
+    restart(): Promise<void>;
     close(): Promise<void>;
     send(str: any, cb: any): boolean;
 }
