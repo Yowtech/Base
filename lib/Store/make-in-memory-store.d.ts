@@ -9,7 +9,7 @@ export namespace waLabelAssociationKey {
 }
 export function makeInMemoryStore(config?: {}): {
     chats: any;
-    contacts: {};
+    contacts: Record<string, any> & { getAll: (limit?: number) => Promise<readonly any[]> };
     messages: {};
     groupMetadata: {};
     state: {
