@@ -1,19 +1,21 @@
 # Yowtech Baileys
 
-Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan API tambahan kompatibilitas Alya-js dan perbaikan store kontak. Ini bukan SDK resmi WhatsApp/Meta dan tidak berafiliasi dengan WhatsApp atau Meta.
+Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state opsional, helper newsletter/JID, API kompatibilitas Alya-js, dan perbaikan store kontak. Ini bukan SDK resmi WhatsApp/Meta dan tidak berafiliasi dengan WhatsApp atau Meta.
 
 [![npm version](https://img.shields.io/npm/v/yowtech)](https://www.npmjs.com/package/yowtech)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-339933)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Rilis terbaru: `1.0.3-rv`
+## Rilis berikutnya: `1.0.4-rv` (kandidat PR; belum dipublish)
 
 Perubahan terbaru:
 
-- In-memory store menyediakan `await store.contacts.getAll(limit?)` untuk mengambil kontak yang tersimpan sebagai array.
-- Dokumentasi API dan batasan penggunaan diperbarui.
-- Tidak ada penggabungan seluruh ZapO-js: ZapO adalah implementasi WhatsApp Web mandiri dengan arsitektur berbeda. Perubahan `getAll` di sini ditulis untuk store Baileys/Yowtech dan tidak mengimpor kode atau dependency ZapO.
-- Tidak ada perubahan fingerprint, transport, atau protokol jaringan.
+- Menambahkan adapter auth state opsional untuk cache-manager dan MongoDB, dengan namespace sesi serta serialisasi buffer/protobuf.
+- Menambahkan `resolveJid`/`resolveJids`, facade pengiriman pesan newsletter, dan polling analytics newsletter.
+- Menambahkan `sock.ws.restart()` yang bounded/concurrency-safe, serta pewarisan timer ephemeral grup yang opt-in (`autoGroupEphemeral: true`).
+- Menambahkan event MEX `limit-sharing.update` dan `community-owner.update` dengan parser defensif.
+- Kandidat analytics dan event MEX belum diuji pada channel/akun WhatsApp live; uji di lingkungan staging sebelum produksi.
+- Backport ditulis untuk arsitektur Yowtech; tidak mengimpor seluruh fork pembanding, dependency baru, atau mengubah fingerprint/protokol transport.
 
 Rincian perubahan tersedia di [CHANGELOG.md](CHANGELOG.md).
 
@@ -171,6 +173,80 @@ sock.ev.on('alya.call-log', record => {
 Pemanggilan `sendStatus({ resolveServerId: true })` menunggu ID server hingga 8 detik secara default; WhatsApp mungkin tidak mengirim ID dalam jangka tersebut.
 
 Lihat [ALYA_PORT.md](ALYA_PORT.md) untuk rincian opsi, contoh tambahan, dan batas validasi.
+
+## Backport sistem dan helper tambahan
+
+### Adapter auth state cache-manager dan MongoDB
+
+Kedua adapter menerima objek backend yang sudah dibuat oleh aplikasi; paket `yowtech` tidak menambahkan dependency cache-manager atau MongoDB. Auth state berisi kredensial sensitif—amankan backend, batasi akses, dan jangan menulis nilainya ke log.
+
+```js
+import { makeCacheManagerAuthState } from 'yowtech'
+
+const { state, saveCreds, clearState } = await makeCacheManagerAuthState(cache, 'bot-production')
+const sock = makeWASocket({ auth: state })
+sock.ev.on('creds.update', saveCreds)
+```
+
+Cache harus menyediakan `get`, `set`, dan `del`. `clearState()` juga memerlukan `cache.keys()` atau `cache.store.keys()` agar hanya key dengan prefix sesi tersebut yang dihapus. Adapter tidak menetapkan TTL sendiri; kebijakan expiry mengikuti backend cache. Untuk MongoDB gunakan collection driver resmi dan session key yang unik per bot; indeks unik `{ sessionId: 1, key: 1 }` disarankan. `clearState()` Mongo menghapus hanya dokumen dengan `sessionId` tersebut.
+
+```js
+import { useMongoAuthState } from 'yowtech'
+
+const { state, saveCreds, clearState } = await useMongoAuthState(collection, 'bot-production')
+const sock = makeWASocket({ auth: state })
+sock.ev.on('creds.update', saveCreds)
+```
+
+Adapter ini menyediakan persistence, bukan distributed lock. Jangan menjalankan dua proses aktif yang menulis sesi WhatsApp yang sama tanpa koordinasi/lock pada aplikasi.
+
+### Resolver JID dari konteks pesan
+
+```js
+import { resolveJid, resolveJids } from 'yowtech'
+
+const recipient = await resolveJid(sock, message, explicitTarget)
+if (recipient) await sock.sendMessage(recipient, { text: 'Halo' })
+
+const recipients = await resolveJids(sock, message, [targetA, targetB])
+```
+
+Urutan kandidat adalah target eksplisit, mention, pengirim pesan kutipan, lalu sender/participant/JID pesan. Helper menormalisasi PN, mencoba pemetaan LID native dan metadata grup, serta mengembalikan `null` jika nomor tidak bisa dipastikan; ia tidak menebak nomor.
+
+### Restart WebSocket dan timer ephemeral grup
+
+```js
+await sock.ws.restart()
+
+const ephemeralSock = makeWASocket({ auth: state, autoGroupEphemeral: true })
+```
+
+`restart()` mengganti transport WebSocket yang dimiliki socket dan menunggu penutupan dengan timeout terbatas. Gunakan saat ada kebutuhan pemulihan eksplisit dan tetap pantau `connection.update`. `autoGroupEphemeral` default-nya mati agar perilaku lama tetap sama; bila aktif, pengiriman grup tanpa `options.ephemeralExpiration` akan mencoba mewarisi `ephemeralDuration` metadata grup. Metadata dicache singkat, nilai caller selalu menang, dan kegagalan lookup kembali ke pengiriman normal.
+
+### Newsletter/channel messages dan analytics
+
+```js
+import { makeNewsletterUtils } from 'yowtech'
+
+const newsletter = makeNewsletterUtils(sock)
+await newsletter.sendNewsletterText(channelJid, 'Pembaruan hari ini')
+await newsletter.sendNewsletterImage(channelJid, { url: 'https://example.com/poster.jpg' }, 'Poster')
+await newsletter.sendNewsletterReact(channelJid, serverMessageId, '👍')
+
+const updates = await sock.newsletterFetchUpdates(channelJid, 20, 0, 0)
+// [{ serverId, views, reactions: [{ code, count }] }]
+```
+
+Facade juga menyediakan helper video/PTV, audio, dokumen, stiker, buttons, list, CTA URL, edit, dan delete. `newsletterFetchUpdates` hanya mengembalikan analytics; ia tidak mendekripsi atau mengunduh isi pesan. Bentuk stanza/response analytics dapat berubah di server WhatsApp—validasi pada channel staging sebelum diandalkan.
+
+### Event MEX grup
+
+```js
+sock.ev.on('limit-sharing.update', update => console.log(update))
+sock.ev.on('community-owner.update', update => console.log(update))
+```
+
+Event ini hanya diterbitkan bila payload MEX memenuhi struktur minimum; payload yang hilang atau malformed diabaikan dengan warning. Format MEX tidak terdokumentasi dan dapat berubah, jadi jangan menjadikannya satu-satunya sumber data otorisasi atau audit.
 
 ## Pengujian
 

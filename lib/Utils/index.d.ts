@@ -23,3 +23,8 @@ export * from "./companion-reg-client-utils.js";
 export * from "./identity-change-handler.js";
 export * from "./stanza-ack.js";
 //# sourceMappingURL=index.d.ts.map
+
+export * from "./use-cache-manager-auth-state.js";
+export * from "./use-mongo-auth-state.js";
+export * from "./messages-newsletter.js";
+export * from "./resolve-jid.js";
