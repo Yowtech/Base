@@ -2,7 +2,7 @@
 
 This is a **Baileys/Yowtech package update**, not a WhatsApp bot/SC project. The compatibility methods are installed by Yowtech's public `makeWASocket()` factory and are available on the returned socket as `sock.alya`.
 
-Package version: `1.0.5-rv` (candidate; not yet published). Node.js 20 or newer is required.
+Package version: `1.0.5-rv` (published to npm on 2026-10-20). Node.js 20 or newer is required.
 
 ## Install or test the fork package
 
@@ -19,15 +19,9 @@ npm install
 npm test
 ```
 
-## Manual npm publish
+## npm publish workflow
 
-The repository workflow is prepared to publish only `yowtech@1.0.5-rv`, and only when manually run from `main` with the exact confirmation string. Before running it:
-
-1. In the npm account that owns `yowtech`, create a granular/automation token with publish access to that package.
-2. In GitHub, open **Settings → Secrets and variables → Actions → New repository secret**. Set the name to `NPM_TOKEN` and paste the token as its value. Never commit the token or send it in chat.
-3. Open **Actions → Publish Yowtech → Run workflow**, select `main`, and enter exactly `yowtech@1.0.5-rv` in `confirm_publish`.
-
-The workflow checks the package name/version, installs dependencies, runs tests, checks the package contents, refuses to publish if that version already exists, then publishes publicly with provenance. Do not run it until `NPM_TOKEN` is configured for an npm account with publish rights. A GitHub merge or package publish should be performed only after the release contents have been reviewed.
+The manual workflow successfully published `yowtech@1.0.5-rv` to npm with provenance on 2026-10-20. Its exact-version gate now refuses to publish that version again. For a future release, bump `package.json`, update release notes and the workflow's exact-version checks together in a reviewed PR; ensure the repository `NPM_TOKEN` secret belongs to an account with publish access before running the workflow from `main`.
 
 ## Added public APIs
 

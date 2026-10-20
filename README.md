@@ -6,7 +6,7 @@ Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state op
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-339933)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Rilis berikutnya: `1.0.5-rv` (kandidat; belum dipublish)
+## Rilis terbaru: `1.0.5-rv` (sudah tersedia di npm)
 
 Perubahan terbaru:
 
