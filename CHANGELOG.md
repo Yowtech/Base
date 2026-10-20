@@ -2,7 +2,7 @@
 
 Perubahan penting untuk paket `yowtech` dicatat di sini.
 
-## 1.0.5-rv — kandidat fitur tambahan
+## 1.0.5-rv — diterbitkan 2026-10-20
 
 - Menambahkan `sock.sendImagePoll(jid, { name, options: [{ name, image }], selectableCount? })`; helper mengunggah gambar per opsi, mengirim poll image V3, dan mengaitkan setiap media dengan parent poll. Poll teks lama tidak diubah.
 - Menambahkan `sock.sendInlineWebUI(...)` dan utility `buildWebuiMessage`/`sendInlineWebUI`. Payload Rich WebUI dibatasi 64 KiB HTML dan diserialisasi sebagai protobuf bytes/enum Yowtech.
@@ -12,7 +12,7 @@ Perubahan penting untuk paket `yowtech` dicatat di sini.
 - Seluruh API baru bersifat opt-in; tidak mengganti `sendMessage`, noSelfSync, newsletter, atau adapter auth yang ada. Tidak ada dependency baru atau penggantian WAProto generated files.
 - Tes unit/protobuf/relay lokal lulus 57/57 dengan mock upload/relay. Rendering, penerimaan server, dan perilaku lintas versi klien WhatsApp belum diverifikasi pada akun live.
 
-## 1.0.4-rv — kandidat PR; belum dipublish
+## 1.0.4-rv — diterbitkan 2026-10-19
 
 - Menambahkan `makeCacheManagerAuthState(cache, sessionKey)` dan `useMongoAuthState(collection, sessionKey)` sebagai adapter auth state opsional. Keduanya memakai BufferJSON, pemulihan protobuf AppState, isolasi sesi, dan `clearState`; tidak menambah dependency backend.
 - Menambahkan `resolveJid` dan `resolveJids` untuk target/mention/pesan kutipan/sender, dengan pemetaan LID native dan fallback metadata grup. Hasil yang tak dapat dipastikan adalah `null`, bukan nomor tebakan.
