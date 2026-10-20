@@ -247,6 +247,10 @@ declare function makeWASocket(config: any): {
     getUSyncDevices: (jids: any, useCache: any, ignoreZeroDevices: any) => Promise<any[]>;
     updateMemberLabel: (jid: any, memberLabel: any) => Promise<any>;
     updateMediaMessage: (message: any) => Promise<any>;
+    sendImagePoll: (jid: string, content: import("../Utils/messages.js").ImagePollContent, options?: any) => Promise<import("../index.js").proto.WebMessageInfo>;
+    sendInlineWebUI: (jid: string, html: string, title?: string, options?: import("../Utils/rich-webui.js").SendInlineWebUIOptions) => Promise<{ messageId: string; message: import("../index.js").proto.Message }>;
+    richMenu: (jid: string, content?: import("../Utils/rich-menu.js").RichMenuContent, options?: import("../Utils/rich-menu.js").RichMenuSendOptions & { quoted?: any }) => Promise<import("../index.js").proto.WebMessageInfo>;
+    sendA2UI: (jid: string, options: import("../Utils/a2ui.js").SendA2UIOptions) => Promise<import("../index.js").proto.WebMessageInfo>;
     sendMessage: (jid: any, content: any, options?: { noSelfSync?: boolean; [key: string]: any }) => Promise<import("../index.js").proto.WebMessageInfo | undefined>;
     executeWMexQuery: (variables: any, queryId: any, dataPath: any) => Promise<any>;
     newsletterCreate: (name: any, description: any) => Promise<{

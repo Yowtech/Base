@@ -1,21 +1,22 @@
 # Yowtech Baileys
 
-Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state opsional, helper newsletter/JID, API kompatibilitas Alya-js, dan perbaikan store kontak. Ini bukan SDK resmi WhatsApp/Meta dan tidak berafiliasi dengan WhatsApp atau Meta.
+Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state opsional, helper newsletter/JID, API kompatibilitas Alya-js, ImagePoll, dan builder Rich UI eksperimental. Ini bukan SDK resmi WhatsApp/Meta dan tidak berafiliasi dengan WhatsApp atau Meta.
 
 [![npm version](https://img.shields.io/npm/v/yowtech)](https://www.npmjs.com/package/yowtech)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-339933)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Rilis berikutnya: `1.0.4-rv` (kandidat PR; belum dipublish)
+## Rilis berikutnya: `1.0.5-rv` (kandidat; belum dipublish)
 
 Perubahan terbaru:
 
 - Menambahkan adapter auth state opsional untuk cache-manager dan MongoDB, dengan namespace sesi serta serialisasi buffer/protobuf.
 - Menambahkan `resolveJid`/`resolveJids`, facade pengiriman pesan newsletter, dan polling analytics newsletter.
 - Menambahkan `sock.ws.restart()` yang bounded/concurrency-safe, serta pewarisan timer ephemeral grup yang opt-in (`autoGroupEphemeral: true`).
-- Menambahkan event MEX `limit-sharing.update` dan `community-owner.update` dengan parser defensif.
-- Kandidat analytics dan event MEX belum diuji pada channel/akun WhatsApp live; uji di lingkungan staging sebelum produksi.
-- Backport ditulis untuk arsitektur Yowtech; tidak mengimpor seluruh fork pembanding, dependency baru, atau mengubah fingerprint/protokol transport.
+- Menambahkan ImagePoll beserta hash opsi gambar dan asosiasi media; poll teks yang sudah ada tidak diubah.
+- Menambahkan builder/send API opt-in untuk Rich WebUI, RichMenu, dan A2UI di atas WAProto Yowtech.
+- Format Rich UI/ImagePoll bergantung dukungan server dan klien WhatsApp; tes lokal memeriksa protobuf dan relay mock, bukan rendering live. Validasi pada staging sebelum produksi.
+- Fitur ditambahkan secara additive, tanpa dependency baru, tanpa mengganti WAProto generated Yowtech, dan tanpa mengubah default `sendMessage` atau transport.
 
 Rincian perubahan tersedia di [CHANGELOG.md](CHANGELOG.md).
 
@@ -261,8 +262,84 @@ Tes lokal memverifikasi helper store dan kompatibilitas. Tes tersebut tidak meng
 
 Paket ini adalah fork komunitas dari `PROTECTION-JAVA/Protection`, yang merupakan turunan ekosistem Baileys. Perubahan fork Yowtech bersifat additive; lihat riwayat Git untuk asal tiap perubahan. MIT notices yang ada di [LICENSE](LICENSE) wajib tetap disertakan. Mengganti badge atau teks branding proyek tidak menghapus hak cipta maupun kewajiban atribusi upstream.
 
+ImagePoll, Rich WebUI, RichMenu UI, dan A2UI pada kandidat ini diadaptasi dengan izin pengguna dari [RennZSync/baileys](https://github.com/RennZSync/baileys), lalu disusun ulang agar memakai WAProto, send pipeline, dan pola API Yowtech.
+
 ZapO-js (`rexxzyid/zapo`) adalah proyek terpisah dengan implementasi, transport, dan model store yang berbeda. Versi ini hanya mengadaptasi kebutuhan kecil `contacts.getAll` ke store Baileys secara lokal; tidak menggunakan source tree ZapO atau dependency-nya. Jangan menganggap paket ini memiliki API atau fitur ZapO yang belum didokumentasikan di sini.
 
 ## Kontribusi dan pelaporan masalah
 
 Laporkan masalah melalui [Issues](https://github.com/Yowtech/Base/issues) dengan versi Node.js, versi paket, log yang sudah disensor, dan langkah reproduksi minimal. Jangan unggah QR, session credentials, nomor telepon, token, atau isi pesan pribadi.
+
+
+## ImagePoll dan Rich UI eksperimental
+
+Fitur berikut bersifat opt-in dan hanya menggunakan metode baru; `sendMessage` standar dan perilaku fork yang sudah ada tetap sama. Dukungan server/klien WhatsApp untuk format ini dapat berubah. Jalankan pengujian dengan akun staging sebelum dipakai pada bot produksi.
+
+### ImagePoll
+
+`sendImagePoll` mengunggah satu gambar untuk setiap opsi, mengirim poll V3, lalu mengirim media opsi yang ditautkan ke poll tersebut. Input gambar mengikuti format media yang diterima Yowtech (`Buffer`, URL, atau path yang didukung media helper).
+
+```js
+await sock.sendImagePoll(groupJid, {
+  name: 'Pilih desain',
+  selectableCount: 1,
+  options: [
+    { name: 'Versi A', image: './design-a.jpg' },
+    { name: 'Versi B', image: './design-b.jpg' }
+  ]
+})
+```
+
+Setiap opsi memerlukan nama non-kosong dan gambar. Library mengirim beberapa stanza secara berurutan, sehingga helper mengembalikan objek poll utama; pastikan bot mengizinkan relay beberapa pesan untuk satu operasi.
+
+### Rich WebUI
+
+Rich WebUI membungkus HTML inline dalam primitive Rich Response internal. Batas HTML adalah 64 KiB. Kirim hanya HTML yang kamu percayai; keberhasilan relay tidak menjamin UI akan dirender pada aplikasi penerima.
+
+```js
+await sock.sendInlineWebUI(
+  jid,
+  '<!doctype html><html><body><h1>Menu</h1></body></html>',
+  'Menu interaktif'
+)
+```
+
+Utility `buildWebuiMessage({ html, title, ... })` membangun protobuf tanpa mengirim. `sendInlineWebUI(sock, jid, html, title, options)` juga tersedia sebagai helper tingkat utilitas.
+
+### RichMenu UI
+
+`richMenu` mendukung judul, gambar, CTA/toast, carousel/row, disclaimer, dan footer URL. Tombol RichMenu berasal dari format GenAI internal WhatsApp: CTA dapat menampilkan toast, tetapi bukan quick-reply/callback yang mengirim respons ke bot.
+
+```js
+await sock.richMenu(jid, {
+  header: { title: 'Pusat bantuan' },
+  body: {
+    title: 'Pilih topik',
+    buttons: [
+      { label: 'Panduan', toast: 'Membuka panduan' },
+      { label: 'Kontak admin' }
+    ]
+  },
+  footer: { text: 'Buka dokumentasi', url: 'https://example.com/docs' }
+})
+```
+
+`buildRichMenuMessage(content)` menghasilkan protobuf tanpa relay. `sendRichMenu(sock, jid, content, options)` menyediakan helper tingkat utilitas.
+
+### A2UI
+
+A2UI menyediakan builder deklaratif `Text`, `Image`, `Video`, `Button`, `Card`, `Column`, `Row`, `Divider`, `CheckBox`, `TextField`, dan `ChoicePicker`, serta `listCard`. Format `BloksWidget` dan node `<biz>` adalah detail internal, bukan API resmi WhatsApp.
+
+```js
+import makeWASocket, { A2UI } from 'yowtech'
+
+const ui = new A2UI()
+const title = ui.text('Halo dari bot', { variant: 'h1' })
+const detail = ui.text('Pilih tindakan')
+const card = ui.card(detail)
+ui.root([title, card])
+
+await sock.sendA2UI(jid, { a2ui: ui, bodyText: 'Konten A2UI' })
+```
+
+Builder dapat digunakan terpisah melalui `sendA2UIWidget(client, jid, options)`. Tes lokal memastikan protobuf dapat di-encode/decode dan relay memakai socket Yowtech; tes tersebut tidak menguji penerimaan WhatsApp atau tampilan pada klien tertentu.

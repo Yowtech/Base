@@ -44,6 +44,10 @@ export function makeMessagesSocket(config: any): {
     messageRetryManager: MessageRetryManager | null;
     updateMemberLabel: (jid: any, memberLabel: any) => Promise<any>;
     updateMediaMessage: (message: any) => Promise<any>;
+    sendImagePoll: (jid: string, content: import("../Utils/messages.js").ImagePollContent, options?: any) => Promise<proto.WebMessageInfo>;
+    sendInlineWebUI: (jid: string, html: string, title?: string, options?: import("../Utils/rich-webui.js").SendInlineWebUIOptions) => Promise<{ messageId: string; message: proto.Message }>;
+    richMenu: (jid: string, content?: import("../Utils/rich-menu.js").RichMenuContent, options?: import("../Utils/rich-menu.js").RichMenuSendOptions & { quoted?: any }) => Promise<proto.WebMessageInfo>;
+    sendA2UI: (jid: string, options: import("../Utils/a2ui.js").SendA2UIOptions) => Promise<proto.WebMessageInfo>;
     sendMessage: (jid: any, content: any, options?: { noSelfSync?: boolean; [key: string]: any }) => Promise<proto.WebMessageInfo | undefined>;
     executeWMexQuery: (variables: any, queryId: any, dataPath: any) => Promise<any>;
     newsletterCreate: (name: any, description: any) => Promise<{
