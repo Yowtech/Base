@@ -42,5 +42,9 @@ export function aggregateMessageKeysNotFromMe(keys: any): any[];
 export function downloadMediaMessage(message: any, type: any, options: any, ctx: any): Promise<any>;
 export function assertMediaContent(content: any): any;
 export function shouldIncludeBizBinaryNode(message: any): boolean;
+export interface ImagePollOption { name: string; image: any }
+export interface ImagePollContent { name: string; options: ImagePollOption[]; selectableCount?: number; messageSecret?: Uint8Array }
+export function hashImagePollOption(optionName: string, fileSha256: Uint8Array): string;
+export function generateWAMessageFromImagePoll(jid: string, content: ImagePollContent, relayMessage: (jid: string, message: proto.Message, options: any) => Promise<any>, options: any): Promise<proto.WebMessageInfo>;
 import { proto } from '../../WAProto/index.js';
 //# sourceMappingURL=messages.d.ts.map

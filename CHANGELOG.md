@@ -2,6 +2,16 @@
 
 Perubahan penting untuk paket `yowtech` dicatat di sini.
 
+## 1.0.5-rv — kandidat fitur tambahan
+
+- Menambahkan `sock.sendImagePoll(jid, { name, options: [{ name, image }], selectableCount? })`; helper mengunggah gambar per opsi, mengirim poll image V3, dan mengaitkan setiap media dengan parent poll. Poll teks lama tidak diubah.
+- Menambahkan `sock.sendInlineWebUI(...)` dan utility `buildWebuiMessage`/`sendInlineWebUI`. Payload Rich WebUI dibatasi 64 KiB HTML dan diserialisasi sebagai protobuf bytes/enum Yowtech.
+- Menambahkan `sock.richMenu(...)` dengan builder `buildRichMenuMessage`/`sendRichMenu` untuk CTA, carousel/row, gambar, disclaimer, dan footer URL.
+- Menambahkan `A2UI` builder deklaratif serta `sock.sendA2UI(...)`/`sendA2UIWidget(...)`; menyelaraskan `BloksWidget.fallback = 4` pada source schema dengan generated runtime yang sudah mendukung field tersebut.
+- Adaptasi fitur dilakukan dengan izin pengguna dari [RennZSync/baileys](https://github.com/RennZSync/baileys), lalu disusun ulang agar sesuai dengan WAProto dan send pipeline Yowtech.
+- Seluruh API baru bersifat opt-in; tidak mengganti `sendMessage`, noSelfSync, newsletter, atau adapter auth yang ada. Tidak ada dependency baru atau penggantian WAProto generated files.
+- Tes unit/protobuf/relay lokal lulus 57/57 dengan mock upload/relay. Rendering, penerimaan server, dan perilaku lintas versi klien WhatsApp belum diverifikasi pada akun live.
+
 ## 1.0.4-rv — kandidat PR; belum dipublish
 
 - Menambahkan `makeCacheManagerAuthState(cache, sessionKey)` dan `useMongoAuthState(collection, sessionKey)` sebagai adapter auth state opsional. Keduanya memakai BufferJSON, pemulihan protobuf AppState, isolasi sesi, dan `clearState`; tidak menambah dependency backend.
