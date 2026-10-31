@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_publish:
-      description: Type exactly yowtech@1.0.5-cv to publish this package version
+        description: Type exactly yowtech@1.0.5-cv to publish this package version
         required: true
         type: string
 
