@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       confirm_publish:
-        description: Type exactly yowtech@1.0.5-rv to publish this package version
+      description: Type exactly yowtech@1.0.5-cv to publish this package version
         required: true
         type: string
 
 jobs:
   publish:
     name: Publish to npm
-    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_publish == 'yowtech@1.0.5-rv' }}
+    if: ${{ github.ref == 'refs/heads/cv' && inputs.confirm_publish == 'yowtech@1.0.5-cv' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -19,10 +19,10 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout main
+      - name: Checkout release branch
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: cv
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,7 +35,7 @@ jobs:
           node - <<'NODE'
           const fs = require('node:fs')
           const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
-          if (pkg.name !== 'yowtech' || pkg.version !== '1.0.5-rv') {
+          if (pkg.name !== 'yowtech' || pkg.version !== '1.0.5-cv') {
             throw new Error(`Unexpected release target: ${pkg.name}@${pkg.version}`)
           }
           console.log(`Validated ${pkg.name}@${pkg.version}`)
@@ -52,8 +52,8 @@ jobs:
 
       - name: Ensure version is not already published
         run: |
-          if npm view yowtech@1.0.5-rv version >/dev/null 2>&1; then
-            echo 'yowtech@1.0.5-rv already exists on npm; refusing to publish.' >&2
+          if npm view yowtech@1.0.5-cv version >/dev/null 2>&1; then
+            echo 'yowtech@1.0.5-cv already exists on npm; refusing to publish.' >&2
             exit 1
           fi
 
