@@ -2,6 +2,14 @@
 
 Perubahan penting untuk paket `yowtech` dicatat di sini.
 
+## 1.0.5-cv — port patch fork kompatibel
+
+- Memperbarui client revision WhatsApp Web ke `1051815529`, mengikuti release terbaru [itsliaaa/baileys](https://github.com/itsliaaa/baileys) yang tersedia saat port dilakukan.
+- Menambahkan dukungan native flow bisnis `form_message` tanpa mengubah flow lama `review_and_pay` dan `payment_info`.
+- Menambahkan konstanta `WEBSOCKET_STATES` secara additive untuk kompatibilitas adapter WebSocket lintas runtime.
+- Merapikan pemakaian direktori temporary pada enkripsi media.
+- Tidak menyalin rewrite auth-state atau WebSocket secara mentah karena struktur Yowtech berbeda; API Yowtech 1.0.5-rv dipertahankan.
+
 ## 1.0.5-rv — diterbitkan 2026-10-20
 
 - Menambahkan `sock.sendImagePoll(jid, { name, options: [{ name, image }], selectableCount? })`; helper mengunggah gambar per opsi, mengirim poll image V3, dan mengaitkan setiap media dengan parent poll. Poll teks lama tidak diubah.
