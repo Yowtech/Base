@@ -5,6 +5,7 @@ Perubahan penting untuk paket `yowtech` dicatat di sini.
 ## 1.0.5-cv — port patch fork kompatibel
 
 - Memperbarui client revision WhatsApp Web ke `1051815529`, mengikuti release terbaru [itsliaaa/baileys](https://github.com/itsliaaa/baileys) yang tersedia saat port dilakukan.
+- Meng-upgrade koneksi socket ke mode hybrid native WebSocket pada runtime yang mendukungnya dengan fallback `ws`, termasuk normalisasi event binary, timeout handshake, dan cleanup socket lama.
 - Menambahkan dukungan native flow bisnis `form_message` tanpa mengubah flow lama `review_and_pay` dan `payment_info`.
 - Menambahkan konstanta `WEBSOCKET_STATES` secara additive untuk kompatibilitas adapter WebSocket lintas runtime.
 - Merapikan pemakaian direktori temporary pada enkripsi media.

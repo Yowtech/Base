@@ -1,6 +1,6 @@
 export class WebSocketClient extends AbstractSocketClient {
     constructor(...args: any[]);
-    socket: any;
+    socket: any | null;
     get isOpen(): boolean;
     get isClosed(): boolean;
     get isClosing(): boolean;
@@ -8,7 +8,7 @@ export class WebSocketClient extends AbstractSocketClient {
     connect(): void;
     restart(): Promise<void>;
     close(): Promise<void>;
-    send(str: any, cb: any): boolean;
+    send(data: any, cb?: (error?: Error) => void): boolean;
 }
 import { AbstractSocketClient } from './types.js';
 //# sourceMappingURL=websocket.d.ts.map
