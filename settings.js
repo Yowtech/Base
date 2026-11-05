@@ -1,22 +1,20 @@
 global.yB = {
-  botName: "SingulaRita",
+  botName: "Yowtech",
   botNumber: "6283877286019",
-  botVersion: "Senorita-I",
+  botVersion: "1.0.5-cv",
   botProfile: "https://",
   botPrefix: [".", "/"],
-  botPairing: "SENORITA",
+  botPairing: "YOWTECH",
 
   ownerName: "YowTech",
   ownerNumber: "6285743003734",
   ownerProfile: "https://",
 
-  stickerPack: "SingulaRita • Senorita-I",
-  stickerAuthor: "Yogi",
-
-  sosmedInstagram: "https://www.instagram.com/croxxk",
+  stickerPack: "Yowtech",
+  stickerAuthor: "Yowtech",
   sosmedGithub: "https://github.com/Yowtech/Base",
 
-  channelName: "SingulaRita • Senorita-I",
+  channelName: "Yowtech",
   channelJid: "120363426412256403@newsletter",
   channelId: 1,
   channelUrl: "",

@@ -1,6 +1,6 @@
 # Yowtech Baileys
 
-Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state opsional, helper newsletter/JID, API kompatibilitas Alya-js, ImagePoll, dan builder Rich UI eksperimental. Ini bukan SDK resmi WhatsApp/Meta dan tidak berafiliasi dengan WhatsApp atau Meta.
+Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state opsional, helper newsletter/JID, API kompatibilitas Yowtech, ImagePoll, dan builder Rich UI eksperimental. Ini bukan SDK resmi WhatsApp/Meta dan tidak berafiliasi dengan WhatsApp atau Meta.
 
 [![npm version](https://img.shields.io/npm/v/yowtech)](https://www.npmjs.com/package/yowtech)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-339933)](https://nodejs.org/)
@@ -82,9 +82,7 @@ const firstHundred = await store.contacts.getAll(100)
 
 `limit` boleh tidak diberikan. Jika diberikan, nilainya harus bilangan bulat positif yang aman (`Number.isSafeInteger`). Nilai `0`, negatif, desimal, `NaN`, dan tak hingga akan ditolak. Fungsi ini hanya mengembalikan kontak yang saat itu ada di in-memory store; ia tidak meminta daftar kontak baru dari server. Seperti store Baileys in-memory lainnya, data di dalamnya tidak persisten kecuali aplikasi menyimpan dan memulihkannya sendiri.
 
-## API tambahan kompatibilitas Alya-js
-
-Setiap socket hasil `makeWASocket()` memperoleh namespace additive `sock.alya`. Perubahan ini tidak menghapus API Baileys yang sudah ada.
+## Opsi pengiriman tambahan
 
 ### `noSelfSync`
 
@@ -97,83 +95,6 @@ await sock.sendMessage(jid, { text: 'Pesan tanpa salinan ke perangkat tertaut' }
 ```
 
 Tanpa opsi ini perilaku sebelumnya dipertahankan. Opsi diteruskan melalui jalur album media dan retry terkait. Chat ke akun sendiri tetap diperlakukan sebagai self-chat.
-
-### Status
-
-```js
-const entries = sock.alya.status.list({
-  owner: ownerJid,
-  kinds: ['image', 'video'],
-  limit: 20
-})
-
-await sock.alya.status.like({ statusId, owner: ownerJid })
-await sock.alya.status.react({ statusId, owner: ownerJid, emoji: '🔥' })
-
-const result = await sock.alya.status.apply({
-  targets: [ownerJid],
-  action: 'react',
-  emoji: '💜',
-  intervalMs: 500
-})
-
-const downloaded = await sock.alya.status.download({
-  chatJid: 'status@broadcast',
-  kinds: ['image'],
-  limit: 10
-})
-```
-
-Cache status media bersifat in-memory, default maksimum 1.000 entri selama 24 jam, dan hanya melihat pesan yang diterima ketika socket berjalan. Hasil unduhan berbentuk `{ entry, bytes }[]`. `maxBytes` diperiksa setelah setiap file selesai diunduh, bukan sebagai batas memori sebelum download.
-
-### Status grup dan blocklist
-
-```js
-await sock.alya.group.deleteStatus({
-  groupJid,
-  messageId,
-  participant: authorJid,
-  options: { noSelfSync: true }
-})
-
-await sock.alya.privacy.sendBlockList({
-  to: destinationJid,
-  title: 'Blocked contacts'
-})
-```
-
-WhatsApp tetap menerapkan izin admin grup saat status grup dihapus.
-
-### Evaluasi tautan grup
-
-Helper ini **tidak** memasang moderasi otomatis. Panggil secara eksplisit dari handler aplikasi jika memang dikehendaki:
-
-```js
-const result = await sock.alya.links.evaluateGroupLink(message, {
-  kinds: [
-    'tiktok', 'instagram', 'facebook', 'whatsapp_channel',
-    'whatsapp_group_invite', 'telegram', 'generic'
-  ]
-})
-
-if (result.action === 'deleted') console.log('Tautan dihapus:', result.url)
-```
-
-Admin/pemilik grup diizinkan secara default. Perilaku dapat disesuaikan lewat `isAllowedSender` atau `deleteMessage: false`. Jangan memasang handler duplikat jika aplikasi sudah memiliki aturan tautan sendiri.
-
-### Newsletter status dan call-log
-
-Socket menyediakan metode newsletter native seperti `newsletterSendStatus`, `newsletterReactStatus`, `newsletterRevokeStatus`, dan `newsletterFetchStatuses`; `sock.alya.newsletter` menambahkan helper untuk unggah media dan pola akses yang konsisten.
-
-```js
-sock.ev.on('alya.call-log', record => {
-  console.log(record.callId, record.result, record.duration)
-})
-```
-
-Pemanggilan `sendStatus({ resolveServerId: true })` menunggu ID server hingga 8 detik secara default; WhatsApp mungkin tidak mengirim ID dalam jangka tersebut.
-
-Lihat [ALYA_PORT.md](ALYA_PORT.md) untuk rincian opsi, contoh tambahan, dan batas validasi.
 
 ## Backport sistem dan helper tambahan
 
@@ -260,11 +181,10 @@ Tes lokal memverifikasi helper store dan kompatibilitas. Tes tersebut tidak meng
 
 ## Provenance dan lisensi
 
-Paket ini adalah fork komunitas dari `PROTECTION-JAVA/Protection`, yang merupakan turunan ekosistem Baileys. Perubahan fork Yowtech bersifat additive; lihat riwayat Git untuk asal tiap perubahan. MIT notices yang ada di [LICENSE](LICENSE) wajib tetap disertakan. Mengganti badge atau teks branding proyek tidak menghapus hak cipta maupun kewajiban atribusi upstream.
+Paket ini dikelola dan dikembangkan oleh Yowtech di atas ekosistem Baileys. Perubahan Yowtech bersifat additive; lihat riwayat Git untuk detail perubahan. MIT notices yang ada di [LICENSE](LICENSE) wajib tetap disertakan.
 
-ImagePoll, Rich WebUI, RichMenu UI, dan A2UI pada kandidat ini diadaptasi dengan izin pengguna dari [RennZSync/baileys](https://github.com/RennZSync/baileys), lalu disusun ulang agar memakai WAProto, send pipeline, dan pola API Yowtech.
+ImagePoll, Rich WebUI, RichMenu UI, dan A2UI disusun ulang agar memakai WAProto, send pipeline, dan pola API Yowtech.
 
-ZapO-js (`rexxzyid/zapo`) adalah proyek terpisah dengan implementasi, transport, dan model store yang berbeda. Versi ini hanya mengadaptasi kebutuhan kecil `contacts.getAll` ke store Baileys secara lokal; tidak menggunakan source tree ZapO atau dependency-nya. Jangan menganggap paket ini memiliki API atau fitur ZapO yang belum didokumentasikan di sini.
 
 ## Kontribusi dan pelaporan masalah
 

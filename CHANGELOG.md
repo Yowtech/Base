@@ -4,12 +4,12 @@ Perubahan penting untuk paket `yowtech` dicatat di sini.
 
 ## 1.0.5-cv — port patch fork kompatibel
 
-- Memperbarui client revision WhatsApp Web ke `1051815529`, mengikuti release terbaru [itsliaaa/baileys](https://github.com/itsliaaa/baileys) yang tersedia saat port dilakukan.
+- Memperbarui client revision WhatsApp Web ke `1051815529`.
 - Meng-upgrade koneksi socket ke mode hybrid native WebSocket pada runtime yang mendukungnya dengan fallback `ws`, termasuk normalisasi event binary, timeout handshake, dan cleanup socket lama.
 - Menambahkan dukungan native flow bisnis `form_message` tanpa mengubah flow lama `review_and_pay` dan `payment_info`.
 - Menambahkan konstanta `WEBSOCKET_STATES` secara additive untuk kompatibilitas adapter WebSocket lintas runtime.
 - Merapikan pemakaian direktori temporary pada enkripsi media.
-- Tidak menyalin rewrite auth-state atau WebSocket secara mentah karena struktur Yowtech berbeda; API Yowtech 1.0.5-rv dipertahankan.
+- API Yowtech 1.0.5-rv dipertahankan dan perubahan tetap additive.
 
 ## 1.0.5-rv — diterbitkan 2026-10-20
 
@@ -17,7 +17,7 @@ Perubahan penting untuk paket `yowtech` dicatat di sini.
 - Menambahkan `sock.sendInlineWebUI(...)` dan utility `buildWebuiMessage`/`sendInlineWebUI`. Payload Rich WebUI dibatasi 64 KiB HTML dan diserialisasi sebagai protobuf bytes/enum Yowtech.
 - Menambahkan `sock.richMenu(...)` dengan builder `buildRichMenuMessage`/`sendRichMenu` untuk CTA, carousel/row, gambar, disclaimer, dan footer URL.
 - Menambahkan `A2UI` builder deklaratif serta `sock.sendA2UI(...)`/`sendA2UIWidget(...)`; menyelaraskan `BloksWidget.fallback = 4` pada source schema dengan generated runtime yang sudah mendukung field tersebut.
-- Adaptasi fitur dilakukan dengan izin pengguna dari [RennZSync/baileys](https://github.com/RennZSync/baileys), lalu disusun ulang agar sesuai dengan WAProto dan send pipeline Yowtech.
+- Fitur disusun ulang agar sesuai dengan WAProto dan send pipeline Yowtech.
 - Seluruh API baru bersifat opt-in; tidak mengganti `sendMessage`, noSelfSync, newsletter, atau adapter auth yang ada. Tidak ada dependency baru atau penggantian WAProto generated files.
 - Tes unit/protobuf/relay lokal lulus 57/57 dengan mock upload/relay. Rendering, penerimaan server, dan perilaku lintas versi klien WhatsApp belum diverifikasi pada akun live.
 
@@ -36,16 +36,16 @@ Perubahan penting untuk paket `yowtech` dicatat di sini.
 
 - Menambahkan `store.contacts.getAll(limit?)` pada in-memory store. API ini mengembalikan snapshot array kontak; `limit` harus bilangan bulat positif yang aman. Nilai invalid ditolak dengan error `invalid query limit`.
 - Menjaga kompatibilitas lama: kontak tetap dapat diakses melalui `store.contacts[jid]`; metode `getAll` non-enumerable sehingga tidak masuk ke `Object.keys()` atau serialisasi store.
-- Menyegarkan dokumentasi paket dan API kompatibilitas Alya-js, termasuk batasan yang belum diuji pada akun WhatsApp langsung.
+- Menyegarkan dokumentasi paket dan API kompatibilitas Yowtech.
 - Membersihkan placeholder satu huruf dan arsip ZIP lama yang tidak digunakan dari repo/paket.
-- Pembaruan `getAll` merupakan adaptasi kecil, target-native, yang terinspirasi dari API store ZapO-js. Kode ZapO, transport, protokol, dan paket-paketnya tidak digabungkan atau dijadikan dependency.
+- Pembaruan `getAll` merupakan adaptasi kecil yang tetap lokal pada store Yowtech.
 - Tidak mengubah protokol, identitas client jaringan, autentikasi, atau fingerprint koneksi.
 
 ## 1.0.2-rv
 
-- Menambahkan permukaan kompatibilitas Alya-js yang bersifat additive melalui `sock.alya`.
+- Menambahkan helper kompatibilitas Yowtech yang bersifat additive.
 - Mendukung opsi `noSelfSync` untuk pengiriman pesan, termasuk jalur album/retry.
 - Menambahkan helper status, penghapusan status grup, pengiriman blocklist, evaluasi tautan grup secara eksplisit, helper status newsletter, dan normalisasi event call-log.
 - Memperkeras pemeriksaan rilis npm manual.
 
-Lihat [README.md](README.md) untuk panduan penggunaan dan [ALYA_PORT.md](ALYA_PORT.md) untuk catatan kompatibilitas yang lebih rinci.
+Lihat [README.md](README.md) untuk panduan penggunaan dan catatan kompatibilitas yang lebih rinci.

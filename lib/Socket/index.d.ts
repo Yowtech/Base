@@ -1,4 +1,3 @@
-import type { AlyaCompat } from './alya-compat.js';
 export default makeWASocket;
 declare function makeWASocket(config: any): {
     communityQuery: (jid: any, type: any, content: any) => Promise<any>;
@@ -536,6 +535,5 @@ declare function makeWASocket(config: any): {
         enforcementType: any;
     }>;
     fetchNewChatMessageCap: () => Promise<any>;
-    alya: AlyaCompat;
 };
 //# sourceMappingURL=index.d.ts.map

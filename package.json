@@ -24,7 +24,6 @@
     "WAProto/**/*",
     "test/**/*",
     "CHANGELOG.md",
-    "ALYA_PORT.md",
     "engine-requirements.js"
   ],
   "keywords": [
