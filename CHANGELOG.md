@@ -2,6 +2,12 @@
 
 Perubahan penting untuk paket `yowtech` dicatat di sini.
 
+## 1.0.6-rv — release version
+
+- Memigrasikan sub-platform Windows dari `WIN32` yang sudah retired ke `WIN_HYBRID` mengikuti upstream Baileys.
+- Menandai paket ini sebagai release version (`rv`); fitur belum dinyatakan sebagai complete version (`cv`).
+- Seluruh 56 test lokal lulus sebelum publish.
+
 ## 1.0.5-cv — port patch fork kompatibel
 
 - Memperbarui client revision WhatsApp Web ke `1051815529`.
