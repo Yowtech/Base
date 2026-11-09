@@ -6,10 +6,12 @@ Fork komunitas berbasis Baileys untuk WhatsApp Web, dengan adapter auth state op
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-339933)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Rilis terbaru: `1.0.5-rv` (sudah tersedia di npm)
+## Rilis terbaru: `1.0.7-rv` (release version; belum complete version)
 
 Perubahan terbaru:
 
+- Menyelaraskan versi paket dan dokumentasi rilis; tidak ada perubahan API atau perilaku runtime.
+- Rilis `1.0.6-rv` memperbarui sub-platform Windows dari `WIN32` yang sudah retired ke `WIN_HYBRID`.
 - Menambahkan adapter auth state opsional untuk cache-manager dan MongoDB, dengan namespace sesi serta serialisasi buffer/protobuf.
 - Menambahkan `resolveJid`/`resolveJids`, facade pengiriman pesan newsletter, dan polling analytics newsletter.
 - Menambahkan `sock.ws.restart()` yang bounded/concurrency-safe, serta pewarisan timer ephemeral grup yang opt-in (`autoGroupEphemeral: true`).

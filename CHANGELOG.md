@@ -2,6 +2,17 @@
 
 Perubahan penting untuk paket `yowtech` dicatat di sini.
 
+## 1.0.7-rv — release version
+
+- Menyelaraskan metadata versi paket dan dokumentasi rilis.
+- Tidak ada perubahan API, dependency, atau perilaku runtime pada rilis ini.
+- Seluruh 56 test lokal lulus sebelum publish.
+
+## 1.0.6-rv — release version
+
+- Memigrasikan sub-platform Windows dari `WIN32` yang sudah retired ke `WIN_HYBRID` mengikuti upstream Baileys.
+- Seluruh 56 test lokal lulus sebelum publish.
+
 ## 1.0.5-rv — diterbitkan 2026-10-20
 
 - Menambahkan `sock.sendImagePoll(jid, { name, options: [{ name, image }], selectableCount? })`; helper mengunggah gambar per opsi, mengirim poll image V3, dan mengaitkan setiap media dengan parent poll. Poll teks lama tidak diubah.
