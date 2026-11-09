@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       confirm_publish:
-        description: Type exactly yowtech@1.0.6-rv to publish this package version
+        description: "Type exactly yowtech@<version>-rv from cv/package.json to publish"
         required: true
         type: string
 
 jobs:
   publish:
     name: Publish to npm
-    if: ${{ github.ref == 'refs/heads/cv' && inputs.confirm_publish == 'yowtech@1.0.6-rv' }}
+    if: ${{ github.ref == 'refs/heads/cv' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -30,15 +30,23 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
-      - name: Verify package identity and version
+      - name: Verify package identity, release version, and confirmation
+        id: package
+        env:
+          CONFIRM_PUBLISH: ${{ inputs.confirm_publish }}
         run: |
           node - <<'NODE'
           const fs = require('node:fs')
           const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'))
-          if (pkg.name !== 'yowtech' || pkg.version !== '1.0.6-rv') {
+          if (pkg.name !== 'yowtech' || !/^\d+\.\d+\.\d+-rv$/.test(pkg.version)) {
             throw new Error(`Unexpected release target: ${pkg.name}@${pkg.version}`)
           }
-          console.log(`Validated ${pkg.name}@${pkg.version}`)
+          const packageSpec = `${pkg.name}@${pkg.version}`
+          if (process.env.CONFIRM_PUBLISH !== packageSpec) {
+            throw new Error(`Confirmation must exactly match ${packageSpec}`)
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `package_name=${pkg.name}\npackage_version=${pkg.version}\npackage_spec=${packageSpec}\n`)
+          console.log(`Validated ${packageSpec}`)
           NODE
 
       - name: Install dependencies
@@ -51,11 +59,26 @@ jobs:
         run: npm pack --dry-run
 
       - name: Ensure version is not already published
+        env:
+          PACKAGE_NAME: ${{ steps.package.outputs.package_name }}
+          PACKAGE_VERSION: ${{ steps.package.outputs.package_version }}
         run: |
-          if npm view yowtech@1.0.6-rv version >/dev/null 2>&1; then
-            echo 'yowtech@1.0.6-rv already exists on npm; refusing to publish.' >&2
-            exit 1
-          fi
+          set -euo pipefail
+          registry_url="https://registry.npmjs.org/${PACKAGE_NAME}/${PACKAGE_VERSION}"
+          http_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$registry_url")"
+          case "$http_status" in
+            200)
+              echo "${PACKAGE_NAME}@${PACKAGE_VERSION} already exists on npm; refusing to publish." >&2
+              exit 1
+              ;;
+            404)
+              echo "${PACKAGE_NAME}@${PACKAGE_VERSION} is not published yet."
+              ;;
+            *)
+              echo "Unexpected npm registry status: HTTP ${http_status}" >&2
+              exit 1
+              ;;
+          esac
 
       - name: Publish package
         run: npm publish --access public --provenance

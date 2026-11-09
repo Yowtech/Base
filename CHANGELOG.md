@@ -2,6 +2,12 @@
 
 Perubahan penting untuk paket `yowtech` dicatat di sini.
 
+## 1.0.7-rv — release version
+
+- Menyelaraskan metadata versi paket dan dokumentasi rilis.
+- Tidak ada perubahan API, dependency, atau perilaku runtime pada rilis ini.
+- Seluruh 56 test lokal lulus sebelum publish.
+
 ## 1.0.6-rv — release version
 
 - Memigrasikan sub-platform Windows dari `WIN32` yang sudah retired ke `WIN_HYBRID` mengikuti upstream Baileys.
